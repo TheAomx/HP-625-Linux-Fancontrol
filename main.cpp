@@ -39,7 +39,7 @@ std::vector<ThermalArea> thermal_areas = {
 template <typename T>
 class MeanQueue {
 public:
-    MeanQueue(unsigned int num_elements) {
+    explicit MeanQueue(unsigned int num_elements) {
         values.reserve(num_elements);
         this->num_elements = num_elements;
     }
@@ -85,9 +85,10 @@ constexpr std::uint64_t get_sleep_duration () {
     return 5000;
 }
 
-#define ARRAY_SIZE(X) (sizeof(X)/sizeof(X[0]))
+#define ARRAY_SIZE(X) (sizeof(X)/sizeof((X)[0]))
 
 cpu_temp_t get_cpu_temperature () {
+    char *ret;
     char temperature_buffer[100];
     std::string command = R"foo(acpi -t | grep 'Thermal 1'| grep -oEe [0-9]+\.[0-9])foo";
 
@@ -97,9 +98,14 @@ cpu_temp_t get_cpu_temperature () {
         return 0;
     }
 
-    fgets(temperature_buffer, ARRAY_SIZE(temperature_buffer), fp);
+    ret = fgets(static_cast<char*>(temperature_buffer), ARRAY_SIZE(temperature_buffer), fp);
+    if (ret == nullptr) {
+        std::cerr << "fgets failed" << std::endl;
+        return 0;
+    }
+
     pclose(fp);
-    return std::stod(std::string(temperature_buffer));
+    return std::stod(std::string(static_cast<char*>(temperature_buffer)));
 }
 
 inline void sleep_ms (std::uint64_t ms) {
@@ -111,6 +117,7 @@ enum class FanState {
 };
 
 void update_fan_state (FanState fan_state, std::uint64_t device) {
+    int ret;
     std::string command;
 
     switch (fan_state) {
@@ -125,14 +132,17 @@ void update_fan_state (FanState fan_state, std::uint64_t device) {
 #ifdef DEBUG
     std::cout << command << std::endl;
 #endif
-    std::system(command.c_str());
+    ret = std::system(command.c_str());
+    if (ret == -1) {
+        std::cerr << "system failed" << std::endl;
+    }
 }
 
 int main() {
     static constexpr unsigned int num_elements = 20;
     MeanQueue<cpu_temp_t> tempQueue{num_elements};
 
-    while (1) {
+    while (true) {
         cpu_temp_t current_temperature = get_cpu_temperature();
         tempQueue.update(current_temperature);
         cpu_temp_t mean_temperature = tempQueue.get_mean_value();
