@@ -81,29 +81,67 @@ private:
 
 };
 
-constexpr std::uint64_t get_sleep_duration () {
-    return 5000;
-}
+class PipeExecutor {
+public:
+    FILE *file = nullptr;
+
+    PipeExecutor(std::string &command) {
+        file = popen(command.c_str(), "r");
+        if (file == nullptr) {
+            throw std::runtime_error("popen failed");
+        }
+    }
+
+    PipeExecutor(const PipeExecutor &other) = delete;
+    PipeExecutor& operator= (const PipeExecutor &other) = delete;
+
+    PipeExecutor(PipeExecutor &&other) {
+        file = other.file;
+        other.file = nullptr;
+    }
+    PipeExecutor& operator= (PipeExecutor &&other) {
+        file = other.file;
+        other.file = nullptr;
+        return *this;
+    }
+
+    virtual ~PipeExecutor() {
+        if (file != nullptr) {
+            pclose(file);
+        }
+    }
+
+    std::string get_command_output() {
+        if (file == nullptr) {
+            throw std::runtime_error("file is nullptr on get_command_output");
+        }
+
+        std::string output = "";
+        std::array<char, 100> buffer;
+
+        char *ret = fgets(buffer.data(), buffer.size(), file);
+        if (ret == nullptr) {
+            throw std::runtime_error("fgets failed");
+        }
+
+        output += buffer.data();
+
+        while (fgets(buffer.data(), buffer.size(), file) != nullptr) {
+            output += buffer.data();
+        }
+
+        return output;
+    }
+};
 
 cpu_temp_t get_cpu_temperature () {
-    char *ret;
-    std::array<char, 100> temperature_buffer;
-    std::string command = R"foo(acpi -t | grep 'Thermal 1'| grep -oEe [0-9]+\.[0-9])foo";
+    std::string command = R"foo(acpi -t | grep 'Thermal 0'| grep -oEe [0-9]+\.[0-9])foo";
+    PipeExecutor executor {command};
+    return std::stod(executor.get_command_output());
+}
 
-    FILE *fp = popen(command.c_str(), "r");
-    if (fp == nullptr) {
-        std::cerr << "popen failed" << std::endl;
-        return 0;
-    }
-
-    ret = fgets(temperature_buffer.data(), temperature_buffer.size(), fp);
-    if (ret == nullptr) {
-        std::cerr << "fgets failed" << std::endl;
-        return 0;
-    }
-
-    pclose(fp);
-    return std::stod(std::string(temperature_buffer.data()));
+constexpr std::uint64_t get_sleep_duration () {
+    return 5000;
 }
 
 inline void sleep_ms (std::uint64_t ms) {
