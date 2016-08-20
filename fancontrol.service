@@ -1,0 +1,11 @@
+[Unit]
+Description=fancontrol
+
+[Service]
+TimeoutStartSec=0
+ExecStart=/opt/FanControl
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target
+
