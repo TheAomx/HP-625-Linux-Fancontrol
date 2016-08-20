@@ -31,9 +31,9 @@ struct ThermalArea {
 };
 
 std::vector<ThermalArea> thermal_areas = {
-        {73, 110, {3, 6, 7}},
-        {60, 73,  {3, 4, 6, 7}},
-        {30, 60,  {3, 4, 5, 6, 7 }},
+        {.lower_bound = 73, .upper_bound = 110, .devices = {3, 6, 7}},
+        {.lower_bound = 60, .upper_bound = 73,  .devices = {3, 4, 6, 7}},
+        {.lower_bound = 30, .upper_bound = 60,  .devices = {3, 4, 5, 6, 7 }},
 };
 
 template <typename T>
@@ -46,13 +46,13 @@ public:
 
     void update (T value) {
         values[last] = value;
-        last+=1;
+        ++last;
         if (last == num_elements) {
             filled = true;
         }
         last %= num_elements;
         if (last == first) {
-            first+=1;
+            ++first;
             first %= num_elements;
         }
     }
