@@ -85,11 +85,9 @@ constexpr std::uint64_t get_sleep_duration () {
     return 5000;
 }
 
-#define ARRAY_SIZE(X) (sizeof(X)/sizeof((X)[0]))
-
 cpu_temp_t get_cpu_temperature () {
     char *ret;
-    char temperature_buffer[100];
+    std::array<char, 100> temperature_buffer;
     std::string command = R"foo(acpi -t | grep 'Thermal 1'| grep -oEe [0-9]+\.[0-9])foo";
 
     FILE *fp = popen(command.c_str(), "r");
@@ -98,14 +96,14 @@ cpu_temp_t get_cpu_temperature () {
         return 0;
     }
 
-    ret = fgets(static_cast<char*>(temperature_buffer), ARRAY_SIZE(temperature_buffer), fp);
+    ret = fgets(temperature_buffer.data(), temperature_buffer.size(), fp);
     if (ret == nullptr) {
         std::cerr << "fgets failed" << std::endl;
         return 0;
     }
 
     pclose(fp);
-    return std::stod(std::string(static_cast<char*>(temperature_buffer)));
+    return std::stod(std::string(temperature_buffer.data()));
 }
 
 inline void sleep_ms (std::uint64_t ms) {
