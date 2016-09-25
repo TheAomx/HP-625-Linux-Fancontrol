@@ -6,7 +6,7 @@
 
 typedef double cpu_temp_t;
 
-std::vector<std::uint64_t > all_devices = {
+const std::array<std::uint64_t, 5> all_devices = {
         3, 4, 5, 6, 7
 };
 
@@ -15,11 +15,11 @@ struct ThermalArea {
     cpu_temp_t upper_bound;
     std::vector<std::uint64_t> devices;
 
-    bool is_temperature_in_area (cpu_temp_t temperature) {
+    bool is_temperature_in_area (const cpu_temp_t temperature) const {
         return temperature >= lower_bound && temperature <= upper_bound;
     }
 
-    bool contains_device (std::uint64_t device) {
+    bool contains_device (const std::uint64_t device) const {
         for (auto d : devices) {
             if (d == device) {
                 return true;
@@ -30,21 +30,21 @@ struct ThermalArea {
     }
 };
 
-std::vector<ThermalArea> thermal_areas = {
+const std::array<ThermalArea, 3> thermal_areas = {{
         {.lower_bound = 73, .upper_bound = 110, .devices = {3, 6, 7}},
         {.lower_bound = 60, .upper_bound = 73,  .devices = {3, 4, 6, 7}},
         {.lower_bound = 30, .upper_bound = 60,  .devices = {3, 4, 5, 6, 7 }},
-};
+}};
 
 template <typename T>
 class MeanQueue {
 public:
-    explicit MeanQueue(unsigned int num_elements) {
+    explicit MeanQueue(const unsigned int num_elements) {
         values.reserve(num_elements);
         this->num_elements = num_elements;
     }
 
-    void update (T value) {
+    void update (const T value) {
         values[last] = value;
         ++last;
         if (last == num_elements) {
@@ -57,7 +57,7 @@ public:
         }
     }
 
-    T get_mean_value() {
+    T get_mean_value() const {
         T sum = 0;
 
         for (unsigned int t = first; t != last; t= (t+1) % num_elements) {
@@ -144,7 +144,7 @@ constexpr std::uint64_t get_sleep_duration () {
     return 5000;
 }
 
-inline void sleep_ms (std::uint64_t ms) {
+inline void sleep_ms (const std::uint64_t ms) {
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
@@ -152,7 +152,7 @@ enum class FanState {
     ON, OFF
 };
 
-void update_fan_state (FanState fan_state, std::uint64_t device) {
+void update_fan_state (const FanState fan_state, const std::uint64_t device) {
     int ret;
     std::string command;
 
