@@ -85,7 +85,7 @@ class PipeExecutor {
 public:
     FILE *file = nullptr;
 
-    PipeExecutor(std::string &command) {
+    PipeExecutor(const std::string &command) {
         file = popen(command.c_str(), "r");
         if (file == nullptr) {
             throw std::runtime_error("popen failed");
@@ -135,7 +135,7 @@ public:
 };
 
 cpu_temp_t get_cpu_temperature () {
-    std::string command = R"foo(acpi -t | grep 'Thermal 1'| grep -oEe [0-9]+\.[0-9])foo";
+    const std::string command = R"foo(acpi -t | grep 'Thermal 1'| grep -oEe [0-9]+\.[0-9])foo";
     PipeExecutor executor {command};
     return std::stod(executor.get_command_output());
 }
@@ -154,16 +154,16 @@ enum class FanState {
 
 void update_fan_state (const FanState fan_state, const std::uint64_t device) {
     int ret;
-    std::string command;
-
-    switch (fan_state) {
-        case FanState::ON:
-            command = "echo 1 > /sys/devices/virtual/thermal/cooling_device"+std::to_string(device)+"/cur_state";
-            break;
-        case FanState::OFF:
-            command = "echo 0 > /sys/devices/virtual/thermal/cooling_device"+std::to_string(device)+"/cur_state";
-            break;
-    }
+    const std::string command = [&]() {
+        switch (fan_state) {
+            case FanState::ON:
+                return "echo 1 > /sys/devices/virtual/thermal/cooling_device" +
+                       std::to_string(device) + "/cur_state";
+            case FanState::OFF:
+                return "echo 0 > /sys/devices/virtual/thermal/cooling_device" +
+                       std::to_string(device) + "/cur_state";
+        }
+    }();
 
 #ifdef DEBUG
     std::cout << command << std::endl;
