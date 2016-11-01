@@ -135,7 +135,7 @@ public:
 };
 
 cpu_temp_t get_cpu_temperature () {
-    std::string command = R"foo(acpi -t | grep 'Thermal 1'| grep -oEe [0-9]+\.[0-9])foo";
+    std::string command = R"foo(acpi -t | grep 'Thermal 0'| grep -oEe [0-9]+\.[0-9])foo";
     PipeExecutor executor {command};
     return std::stod(executor.get_command_output());
 }
