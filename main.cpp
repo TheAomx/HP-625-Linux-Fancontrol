@@ -38,7 +38,7 @@ const std::vector<std::uint64_t> all_fans_on = {3, 7};
 const std::array<ThermalArea, 4> thermal_areas = {{
         {.lower_bound = 67, .upper_bound = 110, .devices = all_fans_on},
         {.lower_bound = 60, .upper_bound = 67,  .devices = middle_intensity_fans},
-		{.lower_bound = 50, .upper_bound = 60,  .devices = middle_intensity_fans},
+        {.lower_bound = 50, .upper_bound = 60,  .devices = middle_intensity_fans},
         {.lower_bound = 30, .upper_bound = 50,  .devices = all_fans_off},
 }};
 
