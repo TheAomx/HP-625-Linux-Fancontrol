@@ -6,10 +6,6 @@
 
 typedef double cpu_temp_t;
 
-const std::array<std::uint64_t, 5> all_devices = {
-        3, 4, 5, 6, 7
-};
-
 struct ThermalArea {
     cpu_temp_t lower_bound;
     cpu_temp_t upper_bound;
@@ -30,10 +26,20 @@ struct ThermalArea {
     }
 };
 
-const std::array<ThermalArea, 3> thermal_areas = {{
-        {.lower_bound = 73, .upper_bound = 110, .devices = {3, 6, 7}},
-        {.lower_bound = 60, .upper_bound = 73,  .devices = {3, 4, 6, 7}},
-        {.lower_bound = 30, .upper_bound = 60,  .devices = {3, 4, 5, 6, 7 }},
+const std::array<std::uint64_t, 5> all_devices = {
+        3, 4, 5, 6, 7
+};
+
+const std::vector<std::uint64_t> all_fans_off = {};
+const std::vector<std::uint64_t> small_intensity_fans = {3, 6, 7};
+const std::vector<std::uint64_t> middle_intensity_fans = {3, 4, 6, 7};
+const std::vector<std::uint64_t> all_fans_on = {3, 7};
+
+const std::array<ThermalArea, 4> thermal_areas = {{
+        {.lower_bound = 67, .upper_bound = 110, .devices = all_fans_on},
+        {.lower_bound = 60, .upper_bound = 67,  .devices = middle_intensity_fans},
+		{.lower_bound = 50, .upper_bound = 60,  .devices = middle_intensity_fans},
+        {.lower_bound = 30, .upper_bound = 50,  .devices = all_fans_off},
 }};
 
 template <typename T>
