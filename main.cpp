@@ -26,14 +26,14 @@ struct ThermalArea {
     }
 };
 
-const std::array<std::uint64_t, 5> all_devices = {
-        3, 4, 5, 6, 7
+const std::array<std::uint64_t, 7> all_devices = {
+        1, 2, 3, 4, 5, 6, 7
 };
 
-const std::vector<std::uint64_t> all_fans_off = {};
-const std::vector<std::uint64_t> small_intensity_fans = {3, 6, 7};
-const std::vector<std::uint64_t> middle_intensity_fans = {3, 4, 6, 7};
-const std::vector<std::uint64_t> all_fans_on = {3, 7};
+const std::vector<std::uint64_t> all_fans_off = {3,7};
+const std::vector<std::uint64_t> small_intensity_fans = {3,4,5};
+const std::vector<std::uint64_t> middle_intensity_fans = {3, 4, 5, 6, 7};
+const std::vector<std::uint64_t> all_fans_on = {1,2,3,4,5,6,7};
 
 const std::array<ThermalArea, 4> thermal_areas = {{
         {.lower_bound = 67, .upper_bound = 110, .devices = all_fans_on},
