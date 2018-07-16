@@ -44,7 +44,9 @@ Then you can run the program from the terminal now.
 Now your fans of your HP 625 should be controlled by the program. If you dont want to always manually start the program, you can use the included systemd service fancontrol.service to start the programm at the system startup. If you want to do that just issue the following commands in a terminal.
 
 > cp ./fancontrol.service /etc/systemd/system/
+
 > sudo systemctl enable fancontrol.service
+
 > sudo systemctl start fancontrol.service
 
 I hope this helps you with your issues installing my fan control program for the hp 625. 
