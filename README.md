@@ -5,7 +5,7 @@ Fancontrol under Linux for HP-625 Notebooks for latest kernel versions.
 
 If you want to use the fan control utility then you first have to compile it using cmake and g++. How you can install these programs depends on the linux distrubution you are using. Assuming that you are using debian or ubuntu you can issue the command 
 
-> sudo apt install build-essential cmake git
+> sudo apt install build-essential cmake git acpi
 
 to install the packages on your system.
 
